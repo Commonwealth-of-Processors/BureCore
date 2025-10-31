@@ -8,6 +8,10 @@ module BC_stage_if #(
   input  logic i_rstn,
 
   CG_memory_interface.to_memory   if_imem,
+
+  input  logic [ADDR_WIDTH-1:0]   i_new_pc,
+  input  logic                    i_prst,
+
   output logic                    o_instr_valid,
   output logic [INSTR_WIDTH-1:0]  o_instr
 );
@@ -15,13 +19,13 @@ module BC_stage_if #(
   logic [DATA_WIDTH-1:0]  w_pc;
 
   CG_counter #(
-    .DATA_WIDTH (DATA_WIDTH )
+    .DATA_WIDTH (ADDR_WIDTH )
   ) program_counter (
     .i_clk      (i_clk                ),
     .i_rstn     (i_rstn               ),
-    .i_prst     (1'b0                 ),
+    .i_prst     (i_prst               ),
     .i_stop     (~if_imem.raddr_ready ),
-    .i_default  ('0                   ),
+    .i_default  (i_new_pc             ),
     .o_count    (w_pc                 )
   );
 
