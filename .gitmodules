@@ -1,0 +1,3 @@
+[submodule "CommonGoods"]
+	path = CommonGoods
+	url = https://github.com/Commonwealth-of-Processors/CommonGoods
