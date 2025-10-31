@@ -22,14 +22,18 @@ module BC_stage_id
   output logic [DATA_WIDTH-1:0] o_rs2_data,
   output logic                  o_rd_wen,
   output logic [4:0]            o_rd_addr,
+
+  output logic                  o_branch_ignit
 );
+
+  logic w_decode_valid;
 
   logic [DATA_WIDTH-1:0]  w_rs1_data;
   logic [DATA_WIDTH-1:0]  w_rs2_data;
   logic                   w_rd_wen;
   logic [4:0]             w_rd_addr;
 
-  logic w_decode_valid;
+  logic w_branch_ignit;
 
   always_comb begin
     w_decode_valid  = i_instr_valid;
@@ -43,10 +47,27 @@ module BC_stage_id
     // Decode Destination Register
     w_rd_addr   = rd(i_instr);
     w_rd_wen    = is_rd_opcode(i_instr);
+
+    // Instant Branch Check
+    if (is_branch_opcode(i_instr)) begin
+      case(funct3(i_instr))
+        3'b000 : begin
+          w_branch_ignit  = i_rs1_data == i_rs2_data;
+        end
+        3'b001 : begin
+          w_branch_ignit  = i_rs1_data != i_rs2_data;
+        end
+        default :begin
+          w_branch_ignit  = 1'b0;
+        end
+      endcase
+    end else begin
+      w_branch_ignit  = 1'b0;
+    end
   end
 
   always_ff @(posedge i_clk, negedge i_rstn) begin
-    if(!i_rstn) begin
+    if (!i_rstn) begin
       o_decode_valid  <= 1'b0;
     end else begin
       o_decode_valid  <= w_decode_valid;
@@ -54,10 +75,11 @@ module BC_stage_id
   end
 
   always_ff @(posedge i_clk) begin
-    o_rs1_data  <= w_rs1_data;
-    o_rs2_data  <= w_rs2_data;
-    o_rd_data   <= w_rd_data;
-    o_rd_wen    <= w_rd_wen;
+    o_rs1_data      <= w_rs1_data;
+    o_rs2_data      <= w_rs2_data;
+    o_rd_data       <= w_rd_data;
+    o_rd_wen        <= w_rd_wen;
+    o_branch_ignit  <= w_branch_ignit;
   end
 
 endmodule
