@@ -16,6 +16,8 @@ module BC_stage_if #(
   output logic [INSTR_WIDTH-1:0]  o_instr
 );
 
+  logic w_instr_valid;
+
   logic [DATA_WIDTH-1:0]  w_pc;
 
   CG_counter #(
@@ -34,6 +36,17 @@ module BC_stage_if #(
     if_imem.rdata_ready = 1'b1;
     if_imem.raddr       = w_pc;
 
+    if(!if_imem.raddr_ready) begin
+      w_instr_valid     = '0;
+    end else begin
+      w_instr_valid     = if_imem.rdata_valid;
+    end
+    // During reset, signal is not valid
+    if(i_prst | !i_rstn) begin
+      if_imem.raddr_valid = 1'b0; 
+    end else begin
+      if_imem.raddr_valid = 1'b1; 
+    end
     // Not use
     if_imem.wen         = 1'b0;
     if_imem.wdata_valid = 1'b0;
@@ -44,16 +57,8 @@ module BC_stage_if #(
   always_ff @(posedge i_clk, negedge i_rstn) begin
     if(!i_rstn) begin
       o_instr_valid <= '0;
-    end else if (!if_imem.raddr_ready) begin
-      o_instr_valid <= '0;
     end else begin
-      o_instr_valid <= if_imem.rdata_valid;
-    end
-    if(!i_rstn | i_prst) begin
-      // During reset, signal is not valid
-      if_imem.raddr_valid <= 1'b0; 
-    end else begin
-      if_imem.raddr_valid <= 1'b1;
+      o_instr_valid <= w_instr_valid;
     end
   end
 

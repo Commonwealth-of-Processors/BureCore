@@ -14,7 +14,7 @@ module BC_stage_if_tb;
   logic         w_instr_valid;
   logic [31:0]  w_instr;
 
-  always #1 begin
+  always #4 begin
     i_clk <= ~i_clk;
   end
 
@@ -47,43 +47,43 @@ module BC_stage_if_tb;
   );
 
   initial begin
-    #2
-    i_rstn              = 1'b0;
     #8
+    i_rstn              = 1'b0;
+    #40
     i_rstn              = 1'b1;
-    #2
+    #8
     if_mem.wen          = 1'b1;
     if_mem.wdata_valid  = 1'b1;
     if_mem.waddr        = 32'h0000_0000;
     if_mem.wdata        = 32'h0000_0114;
-    #2
+    #8
     if_mem.wen          = 1'b1;
     if_mem.wdata_valid  = 1'b1;
     if_mem.waddr        = 32'h0000_0001;
     if_mem.wdata        = 32'h0000_0214;
-    #2
+    #8
     if_mem.wen          = 1'b1;
     if_mem.wdata_valid  = 1'b1;
     if_mem.waddr        = 32'h0000_0002;
     if_mem.wdata        = 32'hAAAA_AAAA;
-    #2
+    #8
     if_mem.wen          = 1'b1;
     if_mem.wdata_valid  = 1'b1;
     if_mem.waddr        = 32'h0000_0003;
     if_mem.wdata        = 32'hAAAA_AAAB;
-    #2
+    #8
     if_mem.wen          = 1'b1;
     if_mem.wdata_valid  = 1'b1;
     if_mem.waddr        = 32'h0000_0004;
     if_mem.wdata        = 32'hAAAA_AAAC;
-    #2
+    #8
     if_mem.wen          = 1'b1;
     if_mem.wdata_valid  = 1'b1;
     if_mem.waddr        = 32'h0000_0005;
     if_mem.wdata        = 32'hAAAA_AAAD;
-    #2
-    i_rstn              = 1'b0;
     #8
+    i_rstn              = 1'b0;
+    #16
     i_rstn              = 1'b1;
     #40
     $finish;
