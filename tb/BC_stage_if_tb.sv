@@ -40,6 +40,8 @@ module BC_stage_if_tb;
     .i_rstn (i_rstn ),
     
     .if_imem        (if_mem         ),
+    .i_prst         (1'b0           ),
+    .i_new_pc       ('0             ),
     .o_instr_valid  (w_instr_valid  ),
     .o_instr        (w_instr        )
   );

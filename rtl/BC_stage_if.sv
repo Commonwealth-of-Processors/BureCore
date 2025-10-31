@@ -31,9 +31,8 @@ module BC_stage_if #(
 
   always_comb begin
     // memory addr
-    if_imem.raddr       = w_pc;
-    if_imem.raddr_valid = i_rstn; // During reset, then signals is not valid
     if_imem.rdata_ready = 1'b1;
+    if_imem.raddr       = w_pc;
 
     // Not use
     if_imem.wen         = 1'b0;
@@ -49,6 +48,12 @@ module BC_stage_if #(
       o_instr_valid <= '0;
     end else begin
       o_instr_valid <= if_imem.rdata_valid;
+    end
+    if(!i_rstn | i_prst) begin
+      // During reset, signal is not valid
+      if_imem.raddr_valid <= 1'b0; 
+    end else begin
+      if_imem.raddr_valid <= 1'b1;
     end
   end
 
