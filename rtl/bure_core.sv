@@ -1,5 +1,5 @@
 `default_nettype none
-module BC_core #(
+module bure_core #(
   parameter DATA_WIDTH  = 32,
   parameter DATA_WIDTH  = 32
 )(
@@ -14,7 +14,7 @@ module BC_core #(
   logic [INSTR_WIDTH-1:0] w_instr;
   logic                   w_instr_valid;
 
-  BC_stage_if #(
+  bure_stage_if #(
     .DATA_WIDTH   (DATA_WIDTH   ),
     .ADDR_WIDTH   (ADDR_WIDTH   ),
     .INSTR_WIDTH  (INSTR_WIDTH  )
@@ -30,7 +30,7 @@ module BC_core #(
     .o_instr        (w_instr        )
   );
 
-  BC_stage_id #(
+  bure_stage_id #(
     .DATA_WIDTH   (DATA_WIDTH   ),
     .INSTR_WIDTH  (INSTR_WIDTH  )
   ) instruction_decode (

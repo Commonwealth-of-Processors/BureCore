@@ -1,9 +1,9 @@
-module BC_stage_if_tb;
+module bure_stage_if_tb;
 
   logic i_clk   = 0;
   logic i_rstn  = 1;
 
-  CG_memory_interface #(
+  cg_memory_interface #(
     .DATA_WIDTH (32 ),
     .ADDR_WIDTH (32 )
   ) if_mem (
@@ -20,10 +20,10 @@ module BC_stage_if_tb;
 
   initial begin
     $dumpfile("wave.vcd");
-    $dumpvars(0, BC_stage_if_tb);
+    $dumpvars(0, bure_stage_if_tb);
   end
 
-  CG_memory_beh #(
+  cg_memory_beh #(
     .DATA_WIDTH (32   ),
     .ADDR_WIDTH (32   ),
     .WORD_NUM   (1024 )
@@ -31,7 +31,7 @@ module BC_stage_if_tb;
     .if_mem (if_mem )
   );
 
-  BC_stage_if #(
+  cg_stage_if #(
     .DATA_WIDTH (32 ),
     .ADDR_WIDTH (32 ),
     .INSTR_WIDTH(32 )

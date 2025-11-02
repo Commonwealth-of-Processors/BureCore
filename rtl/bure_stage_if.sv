@@ -1,5 +1,5 @@
 `default_nettype none
-module BC_stage_if #(
+module bure_stage_if #(
   parameter DATA_WIDTH  = 32,
   parameter ADDR_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
@@ -7,7 +7,7 @@ module BC_stage_if #(
   input  logic i_clk,
   input  logic i_rstn,
 
-  CG_memory_interface.to_memory   if_imem,
+  cg_memory_interface.to_memory   if_imem,
 
   input  logic [ADDR_WIDTH-1:0]   i_new_pc,
   input  logic                    i_prst,
@@ -20,7 +20,7 @@ module BC_stage_if #(
 
   logic [DATA_WIDTH-1:0]  w_pc;
 
-  CG_counter #(
+  cg_counter #(
     .DATA_WIDTH (ADDR_WIDTH )
   ) program_counter (
     .i_clk      (i_clk                ),

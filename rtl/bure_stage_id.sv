@@ -1,6 +1,6 @@
 `default_nettype none
-module BC_stage_id 
-  import CG_rvarch_instr_field_pkg::*;
+module bure_stage_id 
+  import cg_rvarch_instr_field_pkg::*;
 #(
   parameter DATA_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
