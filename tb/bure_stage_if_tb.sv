@@ -31,7 +31,7 @@ module bure_stage_if_tb;
     .if_mem (if_mem )
   );
 
-  cg_stage_if #(
+  bure_stage_if #(
     .DATA_WIDTH (32 ),
     .ADDR_WIDTH (32 ),
     .INSTR_WIDTH(32 )
