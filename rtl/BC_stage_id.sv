@@ -13,57 +13,52 @@ module BC_stage_id
 
   output logic                    o_decode_valid,
 
-  output logic [4:0]            o_rs1_addr,
-  output logic [4:0]            o_rs2_addr,
-  input  logic [DATA_WIDTH-1:0] i_rs1_data,
-  input  logic [DATA_WIDTH-1:0] i_rs2_data,
+  // funct
+  output logic [2:0]              o_funct3,
+  output logic [6:0]              o_funct7,
 
-  output logic [DATA_WIDTH-1:0] o_rs1_data,
-  output logic [DATA_WIDTH-1:0] o_rs2_data,
-  output logic                  o_rd_wen,
-  output logic [4:0]            o_rd_addr,
+  // Register
+  output logic [4:0]              o_rs1_addr,
+  output logic [4:0]              o_rs2_addr,
+  output logic                    o_rd_wen,
+  output logic [4:0]              o_rd_addr,
 
-  output logic                  o_branch_ignit
+  // Immediate
+  output logic                    o_is_imm_op,
+  output logic [DATA_WIDTH-1:0]   o_imm
 );
 
   logic w_decode_valid;
 
-  logic [DATA_WIDTH-1:0]  w_rs1_data;
-  logic [DATA_WIDTH-1:0]  w_rs2_data;
+  logic [2:0]             w_funct3;
+  logic [6:0]             w_funct7;
+  
+  logic [4:0]             w_rs1_addr;
+  logic [4:0]             w_rs2_addr;
+
   logic                   w_rd_wen;
   logic [4:0]             w_rd_addr;
 
-  logic w_branch_ignit;
+  logic                   w_is_imm_op,
+  logic [DATA_WIDTH-1:0]  w_imm;
 
   always_comb begin
     w_decode_valid  = i_instr_valid;
 
-    // Read Source Register
-    o_rs1_addr  = rs1(i_instr);
-    o_rs2_addr  = rs2(i_instr);
-    w_rs1_data  = i_rs1_data;
-    w_rs2_data  = i_rs2_data;
+    w_funct3    = funct3(i_instr);
+    w_funct7    = funct7(i_instr);
+
+    // Deocode Source Register
+    w_rs1_addr  = rs1(i_instr);
+    w_rs2_addr  = rs2(i_instr);
 
     // Decode Destination Register
     w_rd_addr   = rd(i_instr);
     w_rd_wen    = is_rd_opcode(i_instr);
 
-    // Instant Branch Check
-    if (is_branch_opcode(i_instr)) begin
-      case(funct3(i_instr))
-        3'b000 : begin
-          w_branch_ignit  = i_rs1_data == i_rs2_data;
-        end
-        3'b001 : begin
-          w_branch_ignit  = i_rs1_data != i_rs2_data;
-        end
-        default :begin
-          w_branch_ignit  = 1'b0;
-        end
-      endcase
-    end else begin
-      w_branch_ignit  = 1'b0;
-    end
+    // Decode Immediate
+    w_is_imm_op = is_imm_opcode(i_instr);
+    w_imm       = get_imm(i_instr);
   end
 
   always_ff @(posedge i_clk, negedge i_rstn) begin
@@ -75,11 +70,14 @@ module BC_stage_id
   end
 
   always_ff @(posedge i_clk) begin
-    o_rs1_data      <= w_rs1_data;
-    o_rs2_data      <= w_rs2_data;
-    o_rd_data       <= w_rd_data;
-    o_rd_wen        <= w_rd_wen;
-    o_branch_ignit  <= w_branch_ignit;
+    o_funct3    <= w_funct3;
+    o_funct7    <= w_funct7;
+    o_rs1_addr  <= w_rs1_addr;
+    o_rs2_addr  <= w_rs2_addr;
+    o_rd_data   <= w_rd_data;
+    o_rd_wen    <= w_rd_wen;
+    o_is_imm_op <= w_is_imm_op;
+    o_imm       <= w_imm;
   end
 
 endmodule
