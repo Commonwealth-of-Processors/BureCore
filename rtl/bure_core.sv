@@ -1,5 +1,7 @@
 `default_nettype none
-module bure_core #(
+module bure_core 
+  import bure_stage_interface_pkg::*;
+#(
   parameter DATA_WIDTH  = 32,
   parameter DATA_WIDTH  = 32
 )(
@@ -14,6 +16,24 @@ module bure_core #(
   logic [INSTR_WIDTH-1:0] w_instr;
   logic                   w_instr_valid;
 
+  bure_if_interface #(
+    .DATA_WIDTH   (DATA_WIDTH   ),
+    .ADDR_WIDTH   (ADDR_WIDTH   ),
+    .INSTR_WIDTH  (INSTR_WIDTH  )
+  ) if_if ();
+
+  bure_id_interface #(
+    .DATA_WIDTH   (DATA_WIDTH   ),
+    .ADDR_WIDTH   (ADDR_WIDTH   ),
+    .INSTR_WIDTH  (INSTR_WIDTH  )
+  ) if_id ();
+
+  bure_ex_interface #(
+    .DATA_WIDTH   (DATA_WIDTH   ),
+    .ADDR_WIDTH   (ADDR_WIDTH   ),
+    .INSTR_WIDTH  (INSTR_WIDTH  )
+  ) if_ex ();
+
   bure_stage_if #(
     .DATA_WIDTH   (DATA_WIDTH   ),
     .ADDR_WIDTH   (ADDR_WIDTH   ),
@@ -21,26 +41,20 @@ module bure_core #(
   ) instruction_fetch (
     .i_clk          (),
     .i_rstn         (),
-    .if_imem        (if_imem        ),
 
-    .i_new_pc       (),
-    .i_prst         (),
-
-    .o_instr_valid  (w_instr_valid  ),
-    .o_instr        (w_instr        )
+    .if_imem        (if_imem  ),
+    .if_if          (if_if    )
   );
 
   bure_stage_id #(
     .DATA_WIDTH   (DATA_WIDTH   ),
     .INSTR_WIDTH  (INSTR_WIDTH  )
   ) instruction_decode (
-    .i_clk          (),
-    .i_rstn         (),
+    .i_clk          (i_clk  ),
+    .i_rstn         (i_rstn ),
 
-    .i_instr_valid  (w_instr_valid  ),
-    .i_instr        (w_instr        ),
-
-    o_decode_valid  (),
+    .if_if          (if_if  ),
+    .if_id          (if_id  )
   );
 
 endmodule

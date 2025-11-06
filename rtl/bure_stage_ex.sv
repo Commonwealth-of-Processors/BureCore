@@ -1,5 +1,7 @@
 `default_nettype none
 module bure_stage_ex 
+  import bure_stage_interface_pkg::bure_id_interface;
+  import bure_stage_interface_pkg::bure_ex_interface;
 #(
   parameter DATA_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
@@ -7,25 +9,26 @@ module bure_stage_ex
   input  logic i_clk,
   input  logic i_rstn,
 
-  input  logic i_decode_valid,
-
-  input  logic [DATA_WIDTH-1:0] i_rs1_data,
-  input  logic [DATA_WIDTH-1:0] i_rs2_data,
-
-  output logic [DATA_WIDTH-1:0] o_ex_data
+  bure_id_interface.slave   if_id,
+  bure_ex_interface.master  if_ex
 );
+
+  logic [DATA_WIDTH-1:0]  w_data_rhs;
+  logic [DATA_WIDTH-1:0]  w_alu_data;
 
   bure_alu #(
     .DATA_WIDTH (DATA_WIDTH )
   ) alu (
-    .i_funct3   (),
-    .i_funct7   (),
-    .i_data_rhs (),
-    .i_data_lhs (),
-    .o_data     ()
+    .i_force_add(if_id.is_imm_op),
+    .i_funct3   (if_id.funct3   ),
+    .i_funct7   (if_id.funct7   ),
+    .i_data_rhs (w_data_rhs     ),
+    .i_data_lhs (if_id.rs1_data ),
+    .o_data     (w_alu_data     )
   );
 
   always_comb begin
+    w_data_rhs  = if_id.is_imm_op ? if_id.imm : if_id.rs2_data;
   end
 
   always_ff @(posedge i_clk, negedge i_rstn) begin
@@ -35,6 +38,7 @@ module bure_stage_ex
   end
 
   always_ff @(posedge i_clk) begin
+    if_ex.execute_valid <= if_id.decode_valid;
   end
 
 endmodule

@@ -4,11 +4,11 @@ module bure_alu
 #(
   parameter DATA_WIDTH  = 32
 )(
+  input  logic                  i_force_add,
   input  logic [2:0]            i_funct3,
   input  logic [6:0]            i_funct7,
   input  logic [DATA_WIDTH-1:0] i_data_rhs,
   input  logic [DATA_WIDTH-1:0] i_data_lhs,
-  input  logic                  i_force_add,
   output logic [DATA_WIDTH-1:0] o_data
 );
 

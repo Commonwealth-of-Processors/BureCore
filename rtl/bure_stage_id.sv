@@ -1,6 +1,8 @@
 `default_nettype none
 module bure_stage_id 
   import cg_rvarch_instr_field_pkg::*;
+  import bure_stage_interface_pkg::bure_if_interface;
+  import bure_stage_interface_pkg::bure_id_interface;
 #(
   parameter DATA_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
@@ -8,30 +10,8 @@ module bure_stage_id
   input  logic i_clk,
   input  logic i_rstn,
 
-  input  logic                    i_instr_valid,
-  input  logic [INSTR_WIDTH-1:0]  i_instr,
-
-  output logic                    o_decode_valid,
-
-  // funct
-  output logic [2:0]              o_funct3,
-  output logic [6:0]              o_funct7,
-
-  // Register
-  output logic [4:0]              o_rs1_addr,
-  output logic [4:0]              o_rs2_addr,
-  output logic                    o_rd_wen,
-  output logic [4:0]              o_rd_addr,
-
-  // Immediate
-  output logic [DATA_WIDTH-1:0]   o_imm,
-
-  // Op identifier
-  output logic                    o_is_imm_op,
-  output logic                    o_is_jump_op,
-  output logic                    o_is_branch_op,
-  output logic                    o_is_load_op,
-  output logic                    o_is_store_op
+  bure_if_interface.slave   if_if,
+  bure_id_interface.master  if_id
 );
 
   logic w_decode_valid;
@@ -54,52 +34,52 @@ module bure_stage_id
   logic                   w_is_store_op;
 
   always_comb begin
-    w_decode_valid  = i_instr_valid;
+    w_decode_valid  = if_if.instr_valid;
 
-    w_funct3    = funct3(i_instr);
-    w_funct7    = funct7(i_instr);
+    w_funct3    = funct3(if_if.instr);
+    w_funct7    = funct7(if_if.instr);
 
     // Op identifier
-    w_is_imm_op     = is_imm_opcode(i_instr);
-    w_is_jump_op    = is_jump_opcode(i_instr);
-    w_is_branch_op  = is_branch_opcode(i_instr);
-    w_is_load_op    = is_load_opcode(i_instr);
-    w_is_store_op   = is_store_opcode(i_instr);
+    w_is_imm_op     = is_imm_opcode(if_if.instr);
+    w_is_jump_op    = is_jump_opcode(if_if.instr);
+    w_is_branch_op  = is_branch_opcode(if_if.instr);
+    w_is_load_op    = is_load_opcode(if_if.instr);
+    w_is_store_op   = is_store_opcode(if_if.instr);
 
     // Deocode Source Register
-    w_rs1_addr  = rs1(i_instr);
-    w_rs2_addr  = rs2(i_instr);
+    w_rs1_addr  = rs1(if_if.instr);
+    w_rs2_addr  = rs2(if_if.instr);
 
     // Decode Destination Register
-    w_rd_addr   = rd(i_instr);
-    w_rd_wen    = is_rd_opcode(i_instr);
+    w_rd_addr   = rd(if_if.instr);
+    w_rd_wen    = is_rd_opcode(if_if.instr);
 
     // Decode Immediate
-    w_imm       = get_imm(i_instr);
+    w_imm       = get_imm(if_if.instr);
   end
 
   always_ff @(posedge i_clk, negedge i_rstn) begin
     if (!i_rstn) begin
-      o_decode_valid  <= 1'b0;
+      if_id.decode_valid  <= 1'b0;
     end else begin
-      o_decode_valid  <= w_decode_valid;
+      if_id.decode_valid  <= w_decode_valid;
     end
   end
 
   always_ff @(posedge i_clk) begin
-    o_funct3    <= w_funct3;
-    o_funct7    <= w_funct7;
-    o_rs1_addr  <= w_rs1_addr;
-    o_rs2_addr  <= w_rs2_addr;
-    o_rd_data   <= w_rd_data;
-    o_rd_wen    <= w_rd_wen;
-    o_imm       <= w_imm;
+    if_id.funct3    <= w_funct3;
+    if_id.funct7    <= w_funct7;
+    if_id.rs1_addr  <= w_rs1_addr;
+    if_id.rs2_addr  <= w_rs2_addr;
+    if_id.rd_data   <= w_rd_data;
+    if_id.rd_wen    <= w_rd_wen;
+    if_id.imm       <= w_imm;
 
-    o_is_imm_op     <= w_is_imm_op;
-    o_is_jump_op    <= w_is_jump_op;
-    o_is_branch_op  <= w_is_branch_op;
-    o_is_load_op    <= w_is_load_op;
-    o_is_store_op   <= w_is_store_op;
+    if_id.is_imm_op     <= w_is_imm_op;
+    if_id.is_jump_op    <= w_is_jump_op;
+    if_id.is_branch_op  <= w_is_branch_op;
+    if_id.is_load_op    <= w_is_load_op;
+    if_id.is_store_op   <= w_is_store_op;
   end
 
 endmodule

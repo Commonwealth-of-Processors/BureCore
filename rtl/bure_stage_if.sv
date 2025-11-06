@@ -1,5 +1,7 @@
 `default_nettype none
-module bure_stage_if #(
+module bure_stage_if 
+  import bure_stage_interface_pkg::bure_if_interface;
+#(
   parameter DATA_WIDTH  = 32,
   parameter ADDR_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
@@ -7,13 +9,9 @@ module bure_stage_if #(
   input  logic i_clk,
   input  logic i_rstn,
 
-  cg_memory_interface.to_memory   if_imem,
+  cg_memory_interface.to_memory if_imem,
 
-  input  logic [ADDR_WIDTH-1:0]   i_new_pc,
-  input  logic                    i_prst,
-
-  output logic                    o_instr_valid,
-  output logic [INSTR_WIDTH-1:0]  o_instr
+  bure_if_interface.master      if_if
 );
 
   logic w_instr_valid;
@@ -25,9 +23,9 @@ module bure_stage_if #(
   ) program_counter (
     .i_clk      (i_clk                ),
     .i_rstn     (i_rstn               ),
-    .i_prst     (i_prst               ),
+    .i_prst     (if_if.prst           ),
     .i_stop     (~if_imem.raddr_ready ),
-    .i_default  (i_new_pc             ),
+    .i_default  (if_if.new_pc         ),
     .o_count    (w_pc                 )
   );
 
@@ -56,17 +54,17 @@ module bure_stage_if #(
 
   always_ff @(posedge i_clk, negedge i_rstn) begin
     if(!i_rstn) begin
-      o_instr_valid <= '0;
+      if_if.instr_valid <= '0;
     end else begin
-      o_instr_valid <= w_instr_valid;
+      if_if.instr_valid <= w_instr_valid;
     end
   end
 
   always_ff @(posedge i_clk) begin
     if (!if_imem.raddr_ready) begin
-      o_instr <= o_instr;
+      if_if.instr <= if_ifinstr;
     end else begin
-      o_instr <= if_imem.rdata;
+      if_if.instr <= if_imem.rdata;
     end
   end
 
