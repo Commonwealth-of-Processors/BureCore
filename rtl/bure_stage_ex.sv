@@ -1,8 +1,5 @@
 `default_nettype none
-module bure_stage_ex 
-  import bure_stage_interface_pkg::bure_id_interface;
-  import bure_stage_interface_pkg::bure_ex_interface;
-#(
+module bure_stage_ex #(
   parameter DATA_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
 )(

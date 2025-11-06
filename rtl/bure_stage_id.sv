@@ -1,8 +1,6 @@
 `default_nettype none
 module bure_stage_id 
   import cg_rvarch_instr_field_pkg::*;
-  import bure_stage_interface_pkg::bure_if_interface;
-  import bure_stage_interface_pkg::bure_id_interface;
 #(
   parameter DATA_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
@@ -71,7 +69,7 @@ module bure_stage_id
     if_id.funct7    <= w_funct7;
     if_id.rs1_addr  <= w_rs1_addr;
     if_id.rs2_addr  <= w_rs2_addr;
-    if_id.rd_data   <= w_rd_data;
+    if_id.rd_addr   <= w_rd_addr;
     if_id.rd_wen    <= w_rd_wen;
     if_id.imm       <= w_imm;
 

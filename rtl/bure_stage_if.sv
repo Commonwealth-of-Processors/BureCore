@@ -1,7 +1,5 @@
 `default_nettype none
-module bure_stage_if 
-  import bure_stage_interface_pkg::bure_if_interface;
-#(
+module bure_stage_if #(
   parameter DATA_WIDTH  = 32,
   parameter ADDR_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
