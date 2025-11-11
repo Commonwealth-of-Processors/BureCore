@@ -8,6 +8,7 @@ interface bure_if_interface #(
   logic                   prst;
 
   logic                   instr_valid;
+  logic [ADDR_WIDTH-1:0]  instr_addr;
   logic [INSTR_WIDTH-1:0] instr;
 
   modport master (
@@ -15,6 +16,7 @@ interface bure_if_interface #(
     input  prst,
 
     output instr_valid,
+    output instr_addr,
     output instr
   );
 
@@ -23,12 +25,14 @@ interface bure_if_interface #(
     output prst,
 
     input  instr_valid,
+    input  instr_addr,
     input  instr
   );
 endinterface
 
 interface bure_id_interface #(
   parameter DATA_WIDTH  = 32,
+  parameter ADDR_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
 )(
 );
@@ -50,6 +54,9 @@ interface bure_id_interface #(
   // Immediate
   logic [DATA_WIDTH-1:0]  imm;
 
+  // New Instr Addr
+  logic [ADDR_WIDTH-1:0]  instr_addr,
+
   // Op identifier
   logic                   is_imm_op;
   logic                   is_jump_op;
@@ -69,6 +76,8 @@ interface bure_id_interface #(
     output rd_addr,
 
     output imm,
+
+    output instr_addr,
 
     output is_imm_op,
     output is_jump_op,

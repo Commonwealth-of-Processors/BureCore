@@ -3,6 +3,7 @@ module bure_stage_id
   import cg_rvarch_instr_field_pkg::*;
 #(
   parameter DATA_WIDTH  = 32,
+  parameter ADDR_WIDTH  = 32,
   parameter INSTR_WIDTH = 32
 )(
   input  logic i_clk,
@@ -24,6 +25,8 @@ module bure_stage_id
   logic [4:0]             w_rd_addr;
 
   logic [DATA_WIDTH-1:0]  w_imm;
+
+  logic [ADDR_WIDTH-1:0]  w_instr_addr;
 
   logic                   w_is_imm_op;
   logic                   w_is_jump_op;
@@ -54,6 +57,9 @@ module bure_stage_id
 
     // Decode Immediate
     w_imm       = get_imm(if_if.instr);
+
+    // Calculate Jump/Branch Address
+    w_instr_addr  = if_if.instr_addr + get_imm(if_if.instr);
   end
 
   always_ff @(posedge i_clk, negedge i_rstn) begin
@@ -72,6 +78,8 @@ module bure_stage_id
     if_id.rd_addr   <= w_rd_addr;
     if_id.rd_wen    <= w_rd_wen;
     if_id.imm       <= w_imm;
+
+    if_id.instr_addr  <= w_instr_addr;
 
     if_id.is_imm_op     <= w_is_imm_op;
     if_id.is_jump_op    <= w_is_jump_op;

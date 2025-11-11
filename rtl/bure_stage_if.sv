@@ -60,9 +60,11 @@ module bure_stage_if #(
 
   always_ff @(posedge i_clk) begin
     if (!if_imem.raddr_ready) begin
-      if_if.instr <= if_ifinstr;
+      if_if.instr_addr  <= if_if.instr_addr;
+      if_if.instr       <= if_if.instr;
     end else begin
-      if_if.instr <= if_imem.rdata;
+      if_if.instr_addr  <= w_pc;
+      if_if.instr       <= if_imem.rdata;
     end
   end
 
